@@ -227,6 +227,7 @@ function geolocationWatchSuccess(position) {
   updateGeoLocations(position.coords.latitude, position.coords.longitude);
   geolocationWatchSuccess_helper(position.coords.latitude, position.coords.longitude);
 }
+
 function geolocationWatchSuccess_helper(lat, lng) {
   //alert('Latitude: '  + position.coords.latitude + '. ' + 'Longitude: ' + position.coords.longitude);
   var locationText = watchCounter + ': Latitude: '  + Geo.lat+ '. ' + 'Longitude: ' + Geo.lng;

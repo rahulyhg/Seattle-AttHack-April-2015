@@ -10,11 +10,13 @@
 <script src="http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.min.js"></script -->
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="themes/Bootstrap.css" />
-  <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.0/jquery.mobile.structure-1.4.0.min.css" />
+  <link rel="stylesheet" href="themes/jquery.mobile.structure-1.4.0.min.css" />
   <link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
   <!--link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.0/jquery.mobile-1.4.0.min.css" /-->
   <script src="js/jquery-1.11.2.min.js"></script>
-  <script src="http://code.jquery.com/mobile/1.4.0/jquery.mobile-1.4.0.min.js"></script>
+  <script src="js/jquery.mobile-1.4.0.min.js"></script>
+  <script src="js/angular.min.js"></script>
+  <script src="js/angular-resource.min.js"></script>
   <script type="text/javascript" src="http://www.google.com/jsapi"></script>
 
   <style type="text/css">
@@ -37,6 +39,57 @@
   </style>
 </head>
 <body>
+  <!-- Page: home  -->
+  <div id="home" data-role="page" data-theme="a">
+    <div data-role="header" data-position="fixed">
+      <h3>Gladiator Login</h3>
+    </div>
+    <div role="main" class="ui-content">
+      <div class="ui-field-contain">
+        <label for="username">Email</label>
+        <input type="text" id="username" value="someone@gmail.com">
+      </div>
+      <div class="ui-field-contain">
+        <label for="password">Password</label>
+        <input type="password" id="password" value="something">
+      </div>
+      <a class="ui-btn" href="#mainPage" data-ajax="false">Login</a>
+      <a class="ui-btn" href="#mainPage" data-ajax="false">Login with Facebook</a>
+      <a class="ui-btn" href="#mainPage" data-ajax="false">Login with Google</a>
+      <a class="ui-btn" href="#Signup">Sign up</a>
+    </div>
+    <div data-role="footer" data-position="fixed">
+      <h3>Copyright 2015</h3>
+    </div>
+  </div>
+  <!-- Page: Signup  -->
+  <div id="Signup" data-role="page">
+    <div data-role="header" data-position="fixed">
+      <a href="#" data-icon="back" data-rel="back">Back</a>
+      <h3>Gladiator Signup</h3>
+    </div>
+    <div role="main" class="ui-content" is="content">
+      <div class="ui-field-contain">
+        <label for="gk-418pUin">Email</label>
+        <input type="text" name id="gk-418pUin">
+      </div>
+      <div class="ui-field-contain">
+        <label for="gk-418zTGt">Phone</label>
+        <input type="text" name id="gk-418zTGt">
+      </div>
+      <div class="ui-field-contain">
+        <label for="gk-4186mWP">Password</label>
+        <input type="text" name id="gk-4186mWP">
+      </div>
+      <div class="ui-field-contain">
+        <label for="gk-4184RO5">Re-type password</label>
+        <input type="text" name id="gk-4184RO5">
+      </div>
+      <a class="ui-btn" href="#home">Signup</a>
+      <a class="ui-btn" href="#home">Link with Facebook</a>
+      <a class="ui-btn" href="#home">Link with Google</a>
+    </div>
+  </div>
   <div id="mainPage" data-role="page" data-theme="b">
     <div data-role="header">
       <table width="100%">
@@ -259,6 +312,8 @@
 
   <script type="text/javascript" src="cordova.js"></script>
   <script type="text/javascript" src="js/index.js"></script>
+  <script type="text/javascript" src="js/controllers.js"></script>
+  <script type="text/javascript" src="js/services.js"></script>
   <script type="text/javascript" src="js/gladiator.js"></script>
   <script>  
   'using strict';
