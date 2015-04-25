@@ -1,41 +1,275 @@
 <!DOCTYPE html>
-<!--
-    Licensed to the Apache Software Foundation (ASF) under one
-    or more contributor license agreements.  See the NOTICE file
-    distributed with this work for additional information
-    regarding copyright ownership.  The ASF licenses this file
-    to you under the Apache License, Version 2.0 (the
-    "License"); you may not use this file except in compliance
-    with the License.  You may obtain a copy of the License at
+<html lang="en">
+<head>
+  <title>Store-2-Mobile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!--meta http-equiv="refresh" content="30"-->
 
-    http://www.apache.org/licenses/LICENSE-2.0
+<!--link rel="stylesheet" href="http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.min.css" />
+<script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+<script src="http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.min.js"></script -->
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="themes/Bootstrap.css" />
+  <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.0/jquery.mobile.structure-1.4.0.min.css" />
+  <link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+  <!--link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.0/jquery.mobile-1.4.0.min.css" /-->
+  <script src="js/jquery-1.11.2.min.js"></script>
+  <script src="http://code.jquery.com/mobile/1.4.0/jquery.mobile-1.4.0.min.js"></script>
+  <script type="text/javascript" src="http://www.google.com/jsapi"></script>
 
-    Unless required by applicable law or agreed to in writing,
-    software distributed under the License is distributed on an
-    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-     KIND, either express or implied.  See the License for the
-    specific language governing permissions and limitations
-    under the License.
--->
-<html>
-    <head>
-        <meta charset="utf-8" />
-        <meta name="format-detection" content="telephone=no" />
-        <meta name="msapplication-tap-highlight" content="no" />
-        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
-        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
-        <link rel="stylesheet" type="text/css" href="css/index.css" />
-        <title>Hello World</title>
-    </head>
-    <body>
-        <div class="app">
-            <h1>Apache Cordova</h1>
-            <div id="deviceready" class="blink">
-                <p class="event listening">Connecting to Device</p>
-                <p class="event received">Device is Ready</p>
-            </div>
+  <style type="text/css">
+  body {
+    padding-top: 60px;
+    padding-bottom: 40px;
+  }
+  .sidebar-nav {
+    padding: 9px 0;
+  }
+
+  @media (max-width: 980px) {
+    /* Enable use of floated navbar text */
+    .navbar-text.pull-right {
+      float: none;
+      padding-left: 5px;
+      padding-right: 5px;
+    }
+  }
+  </style>
+</head>
+<body>
+  <div id="mainPage" data-role="page" data-theme="b">
+    <div data-role="header">
+      <table width="100%">
+        <tr valign="middle">
+          <td width="30%"><font size="2">Hello Kathy!</font><BR/>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#promosPage"><img height="40" src="./images/user_logo_200.png" alt="user logo" /></a></td>
+          <td width="40%" align="center">Shots: 350</td>
+          <td width="30%" align="right"><img height="60" src="./images/LP-logo.png"></img></td>
+        </tr>
+      </table>
+    </div><!-- /header -->
+
+    <div data-role="content">
+      <div class="app" style="display:none;">
+        <h1>S2M Cordova</h1>
+        <div id="deviceready" class="blink">
+          <p class="event listening">Connecting to Device</p>
+          <p class="event received">Device is Ready</p>
         </div>
-        <script type="text/javascript" src="cordova.js"></script>
-        <script type="text/javascript" src="js/index.js"></script>
-    </body>
+      </div>
+      <div class="geo-coords" style="font-size:12px;">
+        <fieldset class="ui-grid-c">
+          <div class="ui-block-a">
+            <input id="Lat" type="number" value="47.62536">
+          </div>
+          <div class="ui-block-b">
+            <input id="Long" type="number" value="-122.15449">
+          </div>
+          <div class="ui-block-c">
+            <input id="Radius" type="number" value="20">
+          </div>
+          <div class="ui-block-d">
+            <input type="button" value="Go" onclick="recalc_clicked_old()" />
+          </div>
+        </fieldset>
+        <div style="font-size:12px; color:black;" id="statusMessage"></div>
+      </div>
+      <ul data-role="listview" data-inset="true">
+        <div id="stores_list">
+          <li><a href="./store-promos.html" data-ajax="false">Store-1</a></li>
+          <li><a href="./store-promos.html" data-ajax="false">Store-2</a></li>
+        </div>
+      </ul>
+    </div><!-- /content -->
+    <div id="commonFooter" style="font-size:7px; color: #777; text-align:center;">
+    !! CONFIDENTIAL and PROPRIETARY Information !!
+    <p>
+
+    This is a confidential business research project based on work, study and research conducted with Microsoft, Top Retailers (like Walmart, Home Depot, Lowes, Starbucks) and Small Businesses.
+
+    <p>
+
+    You are now accessing confidential and proprietary information of Store-2-Mobile Inc. If you have reached this webpage or application by mistake or due to unintended purposes, please immediately close and delete the webpage or application from your system, and notify the owner.
+
+    </div>
+  </div><!-- main page -->
+
+  <div id="promosPage" data-role="page" data-theme="b">
+    
+    <div data-role="header">
+      <table width="100%">
+        <tr valign="middle">
+          <td width="30%"><a data-rel="back" data-icon="back" data-add-back-btn="true"><img height="40" src="./images/back-button.png" alt="user logo" /></a></td>
+          <td width="40%" align="center"><span id="storeName">Store-2-Mobile</span></td>
+          <td width="30%" align="right"><img height="60" src="./images/LP-logo.png"></img></td>
+        </tr>
+      </table>
+    </div><!-- /header -->
+    
+    <div data-role="content">      
+      <ul data-role="listview" data-inset="true">
+        <div id="promos_list">
+          <li><a href="./store-promos.html" data-ajax="false">Promo-1</a></li>
+          <li><a href="./store-promos.html" data-ajax="false">Promo-2</a></li>
+        </div>
+      </ul>      
+    </div><!-- /content -->
+  
+    <div id="commonFooter" style="font-size:7px; color: #777; text-align:center;">
+    !! CONFIDENTIAL and PROPRIETARY Information !!
+    <p>
+
+    This is a confidential business research project based on work, study and research conducted with Microsoft, Top Retailers (like Walmart, Home Depot, Lowes, Starbucks) and Small Businesses.
+
+    <p>
+
+    You are now accessing confidential and proprietary information of Store-2-Mobile Inc. If you have reached this webpage or application by mistake or due to unintended purposes, please immediately close and delete the webpage or application from your system, and notify the owner.
+
+    </div>
+  </div><!-- details page -->
+
+  <div id="detailsPage" data-role="page" data-theme="b">
+    <div data-role="header">
+      <table width="100%">
+        <tr valign="middle">
+          <td width="30%"><font size="2">Hello Kathy!</font><BR/>&nbsp;&nbsp;&nbsp;&nbsp;<a data-rel="back" data-icon="back" data-add-back-btn="true"><img height="40" src="./images/user_logo_200.png" alt="user logo" /></a></td>
+          <td width="40%" align="center">Macy's</td>
+          <td width="30%" align="right"><img height="60" src="./images/LP-logo.png"></img></td>
+        </tr>
+      </table>
+    </div><!-- /header -->
+
+    <div data-role="content">      
+      <div align="center"><img id="imageItem" src="" height="250" /></div>
+      <h4><div align="center" id="productName">Product Name</div></h4>
+      <table width="100%">
+        <tr>
+          <td width="50%">
+            <span id="ratingStars">
+              <img id="stars" src="http://macys.ugc.bazaarvoice.com/7129aa/4_5/5/rating.gif"/>
+            </span>
+          </td>
+          <td align="right" width="50%">
+            <u><span id="reviewCount"><font size="2">66</span> reviews</u></font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Reg.: $<span id="regularPrice">1.00</span>
+          </td>
+          <td align="right">
+            <b><font color="red">Liquid Price</font></b>: $<span id="liquidPrice">2.00</span>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <b>Sale</b>: $<span id="salePrice">3.00</span>
+          </td>
+          <td align="right">
+            Ends At: <span id="EndTime">12:30 PM</span>
+          </td>
+        </tr>
+        <tr>
+          <td align="center" colspan="2">
+            <a href="#buyPage" alt="Buy">       
+              <img width="150" alt="buy" src="./images/BuyNowButton.png">    
+            </a> 
+            <BR/><BR/>
+            <a onclick="sendSinchMessage();" href="#">
+              <img width="100" alt="send sms" src="./images/Sinch.jpg">
+            </a>
+            <BR/><BR/>
+            <div id="txtButton">   
+              <a title="Click AT&amp;T Share by Text to share a link to this page from your AT&amp;T mobile number" 
+              href="https://lprod.code-api-att.com/attshare/textButton/auth_send?client_id=u2hmc1wvhrhgu20llwoyudslni27qyaf&amp;source=labs.pioneer-inc.com/gladiator" 
+              onclick="window.open(this.href+'&amp;page='+ window.location.href,'textButton','left=20,top=20,width=600,height=600,toolbar=1,resizable=0'); return false;" 
+              alt="AT&amp;T Share by Text">       
+              <img width="100" alt="send sms" src="./images/atttext.jpg">    
+            </a> 
+            </div>            
+          </td>
+        </tr>
+      </table>
+    </div><!-- /content -->
+  </div><!-- details page -->
+
+  <div id="buyPage" data-role="page" data-theme="b">
+
+    <div data-role="header">
+      <table width="100%">
+        <tr valign="middle">
+          <td width="30%"><font size="2">Hello Kathy!</font><BR/>&nbsp;&nbsp;&nbsp;&nbsp;<a data-rel="back" data-icon="back" data-add-back-btn="true"><img height="40" src="./images/user_logo_200.png" alt="user logo" /></a></td>
+          <td width="40%" align="center">Macy's</td>
+          <td width="30%" align="right"><img height="60" src="./images/LP-logo.png"></img></td>
+        </tr>
+      </table>
+    </div><!-- /header -->
+
+    <div data-role="content">  
+      <h3>Place your Order</h3>
+      <b>Order Summary</b><hr>
+      <div>Items</div><hr>
+      <div id="buyPanel" style="border:1px;">
+        <table width="100%">
+          <tr>
+            <td>
+              SKU # <span id="currentProductSKU">1491458</span>
+            </td>
+            <td align="right">
+              $<span id="liquidPrice2">5</span>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2"><span id="productName2"></span><BR/><td> 
+            </tr>
+            <tr>
+              <td width="80%" align="right">
+                Shipping and Handling
+              </td>
+              <td width="20%" align="right">
+                $<span id="shipping"></span><BR/>
+              </td>
+            </tr>
+            <tr>
+              <td width="80%" align="right">
+                Tax (8.6%)
+              </td>
+              <td width="20%" align="right">
+                $<span id="tax"></span><BR/>
+              </td>
+            </tr>
+            <tr><td colspan="2"><hr></td></tr>
+            <tr>
+              <td width="80%" align="right">
+                Order Total:
+              </td>
+              <td width="20%" align="right">
+                $<span id="order_total"></span>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2" align="center">
+                <a data-role="button" data-theme="b" href="index.html" id="payCoinbase" onClick="alert('Thanks for paying with Coinbase');">Pay</a>
+                <div align="center"><img src="./images/CoinbaseLogo.png" alt="coinbase"/></div>
+              </td>
+            </tr>
+          </table>
+        </div>
+    </div><!-- /content -->
+  </div><!-- buyPage page -->
+
+  <script type="text/javascript" src="cordova.js"></script>
+  <script type="text/javascript" src="js/index.js"></script>
+  <script type="text/javascript" src="js/gladiator.js"></script>
+  <script>  
+  'using strict';
+  function notifyOrAlert(msg) {
+    if (cordova.plugins.backgroundMode.isActive()) {
+      scheduleNotification(111, msg);
+    } else {
+      showToast(msg);
+    }
+    console.log("NOTIFY:" + msg);
+  }
+  </script>
+</body>
 </html>
