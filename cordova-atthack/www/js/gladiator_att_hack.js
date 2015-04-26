@@ -2,7 +2,8 @@
 google.load('visualization', '1', { packages: ['table', 'corechart'] });
 
 var gladiator_customers_gsheet_url = "https://docs.google.com/spreadsheets/d/1dln8EkCPD9IsNEpuKN71kkCJJ_l1V8l1sF7gw_YV3dM/edit?usp=sharing";
-var s2m_customers_gsheet_url = "https://docs.google.com/spreadsheets/d/1ExeFuDmK2nhgWof0-3551mXGuGk7Az17VVbHgTNWlio/edit?usp=sharing";
+//var s2m_customers_gsheet_url = "https://docs.google.com/spreadsheets/d/1ExeFuDmK2nhgWof0-3551mXGuGk7Az17VVbHgTNWlio/edit?usp=sharing";
+var s2m_customers_gsheet_url = "https://docs.google.com/spreadsheets/d/1_81LAVmiAcSwaBjhmBy9HSgi752y1vgrMYT_jA-6NVQ/edit?usp=sharing";
 var Geo={};
 var last5Geo={};
 var last10Geo={};
@@ -37,6 +38,11 @@ var lat10queue = new Array();
 var lng10queue = new Array();
 var intervalCurrentPostion = null; // variable to track interval timer to monitor current position
 
+var lastBeaconIndex = -1;
+var lastBeaconTestTime = 0;
+var beaconLatArray = [47.60514, 47.60452, 47.60519];
+var beaconLngArray = [-122.33418, -122.33327, -122.33526];
+
 document.addEventListener("deviceready", onDeviceReady, false);
 
 function onDeviceReady() {
@@ -59,8 +65,6 @@ function onDeviceReady() {
   // BLE Scanning: https://github.com/don/cordova-plugin-ble-central
   //ble.scan([], 5, onDiscoverBleDevice, onBleError);
 
-  // Beacon monitoring: https://github.com/petermetz/cordova-plugin-ibeacon
-  startBeaconMonitoring();
 }
   
 $(document).on("pagebeforeshow","#promosPage",function() {
@@ -77,7 +81,7 @@ function showPromos(){
 
 function showDisclaimer() {
   var strDisclaimer = "!! CONFIDENTIAL and PROPRIETARY Information !!\n\nThis is a confidential business research project based on work, study and research conducted with Microsoft, Top Retailers (like Walmart, Home Depot, Lowes, Starbucks) and Small Businesses.\n\nYou are now accessing confidential and proprietary information of Store-2-Mobile Inc. If you have reached this webpage or application by mistake or due to unintended purposes, please immediately close and delete the webpage or application from your system, and notify the owner.";
-  alert(strDisclaimer); 
+  //alert(strDisclaimer); 
 }
 
 function intialLoad() {
@@ -106,11 +110,16 @@ function intialLoad() {
       //console.log('[success callback] store_string:' + store_string);
       showStores();
       // Now start checking location every 5 seconds...
+      
+      // Beacon monitoring: https://github.com/petermetz/cordova-plugin-ibeacon
+      startBeaconMonitoring();
+      /*
       intervalCurrentPostion = setInterval(
         function() {
           navigator.geolocation.getCurrentPosition(geolocationWatchSuccess, geolocationWatchError, {timeout: 4000, enableHighAccuracy: true});
         }, 
         5000);
+      */
     });
   }
 
@@ -582,8 +591,8 @@ function s2mStoreItemsData(catalogURL, callback_func) {
   var data = null;
   var count = 0;
   var strDisplay = "";
-  var wt = $("#stores_list").width(); 
-  var ht = 2.0*wt/3.0;
+  var wt = $("#stores_list").width()*0.75; 
+  var ht = 4.0*wt/3.0;
 
 
   tq_query += " G > 0.0"; // pick up the items with promo price
@@ -610,8 +619,11 @@ function s2mStoreItemsData(catalogURL, callback_func) {
         e = data.getValue(i,4); // item URL
         f = data.getValue(i,5); // retail price
         g = data.getValue(i,6); // promo price
+        n = data.getValue(i,13); // amzn price
+        o = data.getValue(i,14); // walmart price
         if (g == null || parseFloat(g) <= 0) continue;             
         strDisplay += a + ', ' + b + ', ' + c + ', ' + d + ', ' + e + ', ' + f + '\r\n';
+        /*
         promo_string += '<li data-userid="' + a + '">';
         promo_string += '<div style="background-image: url(' + e + '); background-repeat: no-repeat;';
         promo_string += ' background-size: cover; width: ' + wt + 'px; height: ' + ht + 'px;">';
@@ -620,6 +632,13 @@ function s2mStoreItemsData(catalogURL, callback_func) {
         promo_string += '<span style="font-family: Verdana, Geneva, sans-serif; color: #fff; font-size: 16px;">' + c + '</span><br>';
         promo_string += '<span style="font-family: Verdana, Geneva, sans-serif; color: #fff; font-size: 14px;">' + d + '</span>';
         promo_string += '</div></div><hr></li>';
+        */
+        promo_string += '<li data-userid="' + a + '"><table><tr valign="middle"><td rowspan="3">';
+        promo_string += '<div style="background-image: url(' + e + '); background-repeat: no-repeat;';
+        promo_string += ' background-size: cover; width: ' + wt + 'px; height: ' + ht + 'px;"></div></td><td align="right">$ ' + g + '</td></tr>';
+        promo_string += '<tr valign="middle"><td></td><td align="right">$ ' + n + '</td></tr>';
+        promo_string += '<tr valign="middle"><td></td><td align="right">$ ' + o + '</td></tr>';
+        promo_string += '</table></li>';
       }
       //alert (strDisplay);
     }
@@ -627,89 +646,6 @@ function s2mStoreItemsData(catalogURL, callback_func) {
   });
 }
 
-function getMacysItem(productId) {
-  var restUrl = 'http://origin-api.macys.com/v4/catalog/product/' + productId + '(productdetails(price,summary,availability),promotions,reviews)?retrieveallupcs=true';
-  var timeNow = new Date();
-  var plus30min = new Date(timeNow.getTime() + 30*60000);
-  var amPM = ' AM';
-  var hh = plus30min.getHours()%12;
-  if (plus30min.getHours() >= 12) amPM = ' PM';
-  if (hh == 0) hh = '12';
-  $('#EndTime').html(hh + ':' + plus30min.getMinutes() + amPM );
-
-  var Launch2015 = false;
-
-  if (Launch2015) {
-    $.ajax({
-      url: restUrl,
-      type: 'GET',
-    //crossOrigin: true,
-    success: function(data) {
-      jsonCurrentProduct = data;
-
-      $('#productName').html(jsonCurrentProduct.product[0].productDetails.summary.name);
-      $('#productName2').html(jsonCurrentProduct.product[0].productDetails.summary.name);
-      //alert(data.product[0].productDetails.summary.name);
-      $('#regularPrice').html(jsonCurrentProduct.product[0].productDetails.price.original.pricevalue.low);
-      $('#salePrice').html(jsonCurrentProduct.product[0].productDetails.price.retail.pricevalue.low);
-      $('#liquidPrice').html(currentItemLiquidPrice);
-      $('#liquidPrice2').html(currentItemLiquidPrice);
-      $('#reviewCount').html(jsonCurrentProduct.product[0].Reviews.totalReviewCount);
-      $('#shipping').html((currentItemLiquidPrice*0.05).toPrecision(3));
-      $('#tax').html((currentItemLiquidPrice*0.086).toPrecision(3));
-      $('#order_total').html((currentItemLiquidPrice*1.136).toPrecision(4));
-
-    },
-    error: function(error) { alert('boo!'); },
-    beforeSend: setHeader
-  });
-
-  restUrl = 'http://origin-api.macys.com/v3/catalog/product/' + productId + '?show=image';          
-  $.ajax({
-    url: restUrl,
-    type: 'GET',
-    success: function(data) { 
-      //alert(data.product[0].image[0].imageurl);   
-      //$('#imageItem').attr("src", data.product[0].image[0].imageurl);
-      // Hard code to better resolution for demo
-      $('#imageItem').attr("src", "http://slimages.macys.com/is/image/MCY/products/1/optimized/2169111_fpx.tif?wid=600&hei=510&fit=fit,1&$filterxlrg$");
-    },
-    error: function(error) { alert('boo!'); },
-    beforeSend: setHeader
-  });
-  function setHeader(xhr) {
-    xhr.setRequestHeader('X-Macys-Webservice-Client-Id', 'Launch2015');
-    xhr.setRequestHeader('Accept', 'application/json');
-  }    
-}
-else
-{
-  $('#imageItem').attr("src", "http://slimages.macys.com/is/image/MCY/products/1/optimized/2169111_fpx.tif?wid=600&hei=510&fit=fit,1&$filterxlrg$");
-  $('#productName').html('Free People Peek-A-Boo Cap-Sleeve Lace Dress');
-  $('#productName2').html('Free People Peek-A-Boo Cap-Sleeve Lace Dress');
-    //alert(data.product[0].productDetails.summary.name);
-    $('#regularPrice').html('98.00');
-    $('#salePrice').html('57.99');
-    $('#liquidPrice').html(currentItemLiquidPrice);
-    $('#liquidPrice2').html(currentItemLiquidPrice);
-    $('#reviewCount').html('22');
-    $('#shipping').html((currentItemLiquidPrice*0.05).toPrecision(3));
-    $('#tax').html((currentItemLiquidPrice*0.086).toPrecision(3));
-    $('#order_total').html((currentItemLiquidPrice*1.136).toPrecision(4));
-  }
-}
-
-function sendSinchMessage() {
-  //alert("Into send sinch");
-  var sinchUrl = "http://sinchsms-43618.onmodulus.net/?tophone=+14046109974&smstext=Ash, How do you like this for $34.99? http://thisdress.macys.com";          
-  $.ajax({
-    url: sinchUrl,
-    crossOrigin: true,
-    type: 'GET',
-    success: function(data) { var a=10; },
-    error: function(error) { var b=20; }
-  });
-}
 
 /**
  * Function that creates a BeaconRegion data transfer object.
@@ -729,11 +665,24 @@ function createBeacon() {
   return beaconRegion;   
 }
 
+function findClosestBeaconIndex(beacons) {
+  var nearest = -1;
+  var i = 0;
+  var lastRssi = -1000;
+  for (i = 0; i < beacons.count; i++) {
+    if (beacons[i].rssi > lastRssi) {
+      lastRssi = beacons[i].rssi;
+      nearest = beacons[i].major/1000;
+    }
+  }
+  return nearest;  
+}
+
 function startBeaconMonitoring() {
   var delegate = new cordova.plugins.locationManager.Delegate();
 
   delegate.didDetermineStateForRegion = function (pluginResult) {
-    console.log('[DOM] didDetermineStateForRegion: ' + JSON.stringify(pluginResult));
+    //console.log('[DOM] didDetermineStateForRegion: ' + JSON.stringify(pluginResult));
     //cordova.plugins.locationManager.appendToDeviceLog('[DOM] didDetermineStateForRegion: ' + JSON.stringify(pluginResult));
   };
 
@@ -743,7 +692,23 @@ function startBeaconMonitoring() {
   };
 
   delegate.didRangeBeaconsInRegion = function (pluginResult) {
-    console.log('[DOM] didRangeBeaconsInRegion: ' + JSON.stringify(pluginResult));
+    var currentTime = new Date().getTime();
+    console.log (currentTime - lastBeaconTestTime);
+    if (currentTime - lastBeaconTestTime > 5000) {
+      lastBeaconTestTime = currentTime;
+      newBeaconIndex = -1;
+      console.log('******* [DOM] didRangeBeaconsInRegion: ******' + JSON.stringify(pluginResult.beacons));
+      // This is where we will decide the location and call 
+      newBeaconIndex = 1;
+      newBeaconIndex = findClosestBeaconIndex(pluginResult.beacons);
+
+      if (lastBeaconIndex != newBeaconIndex) 
+      {
+        lastBeaconIndex = newBeaconIndex;
+        console.log('******** FOUND NEW BEACON ******' + lastBeaconIndex);
+      }
+      geolocationWatchSuccess_helper(beaconLatArray[newBeaconIndex], beaconLngArray[newBeaconIndex]);
+    }
   };
 
   //var beaconRegion = new cordova.plugins.locationManager.BeaconRegion(identifier, uuid, major, minor);

@@ -35,3 +35,23 @@ function TodoController($scope, Todo, $http) {
     }    
 }
 
+var storeControllers = angular.module('storeControllers', []);
+
+storeControllers.controller('StoreCtrl', ['$scope', 'Store',
+  function ($scope, Store) {
+    Store.query(function(data) {
+      $scope.stores = data;
+    });
+  }]);
+
+var storeCatalogControllers = angular.module('storeCatalogControllers', []);
+
+storeCatalogControllers.controller('StoreCatalogCtrl', ['$scope', 'StoreCatalog',
+  function ($scope, StoreCatalog) {
+    StoreCatalog.query(function (data) {
+      $scope.storeitems = data;
+      console.log(data);
+    });
+  }]);
+
+
