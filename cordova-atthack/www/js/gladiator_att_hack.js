@@ -2,8 +2,8 @@
 google.load('visualization', '1', { packages: ['table', 'corechart'] });
 
 var gladiator_customers_gsheet_url = "https://docs.google.com/spreadsheets/d/1dln8EkCPD9IsNEpuKN71kkCJJ_l1V8l1sF7gw_YV3dM/edit?usp=sharing";
-//var s2m_customers_gsheet_url = "https://docs.google.com/spreadsheets/d/1ExeFuDmK2nhgWof0-3551mXGuGk7Az17VVbHgTNWlio/edit?usp=sharing";
-var s2m_customers_gsheet_url = "https://docs.google.com/spreadsheets/d/1_81LAVmiAcSwaBjhmBy9HSgi752y1vgrMYT_jA-6NVQ/edit?usp=sharing";
+var s2m_customers_gsheet_url = "https://docs.google.com/spreadsheets/d/1ExeFuDmK2nhgWof0-3551mXGuGk7Az17VVbHgTNWlio/edit?usp=sharing";
+//var s2m_customers_gsheet_url = "https://docs.google.com/spreadsheets/d/1_81LAVmiAcSwaBjhmBy9HSgi752y1vgrMYT_jA-6NVQ/edit?usp=sharing";
 var Geo={};
 var last5Geo={};
 var last10Geo={};
@@ -40,8 +40,8 @@ var intervalCurrentPostion = null; // variable to track interval timer to monito
 
 var lastBeaconIndex = -1;
 var lastBeaconTestTime = 0;
-var beaconLatArray = [47.60514, 47.60452, 47.60519];
-var beaconLngArray = [-122.33418, -122.33327, -122.33526];
+var beaconLatArray = [47.86605, 47.86698, 47.84914];
+var beaconLngArray = [-122.219214, -122.218551, -122.217909];
 
 document.addEventListener("deviceready", onDeviceReady, false);
 
@@ -113,12 +113,13 @@ function intialLoad() {
       
       // Beacon monitoring: https://github.com/petermetz/cordova-plugin-ibeacon
       startBeaconMonitoring();
+      
       /*
       intervalCurrentPostion = setInterval(
         function() {
           navigator.geolocation.getCurrentPosition(geolocationWatchSuccess, geolocationWatchError, {timeout: 4000, enableHighAccuracy: true});
         }, 
-        5000);
+        30000);
       */
     });
   }
@@ -633,12 +634,12 @@ function s2mStoreItemsData(catalogURL, callback_func) {
         promo_string += '<span style="font-family: Verdana, Geneva, sans-serif; color: #fff; font-size: 14px;">' + d + '</span>';
         promo_string += '</div></div><hr></li>';
         */
-        promo_string += '<li data-userid="' + a + '"><table><tr valign="middle"><td rowspan="3">';
+        promo_string += '<li data-userid="' + a + '"><table><tr valign="middle"><td>';
         promo_string += '<div style="background-image: url(' + e + '); background-repeat: no-repeat;';
-        promo_string += ' background-size: cover; width: ' + wt + 'px; height: ' + ht + 'px;"></div></td><td align="right">$ ' + g + '</td></tr>';
-        promo_string += '<tr valign="middle"><td></td><td align="right">$ ' + n + '</td></tr>';
-        promo_string += '<tr valign="middle"><td></td><td align="right">$ ' + o + '</td></tr>';
-        promo_string += '</table></li>';
+        promo_string += ' background-size: cover; width: ' + wt + 'px; height: ' + ht + 'px;"></div></td><td><table><tr valign="middle"><td align="left"><br>$ ' + g + '<br></td></tr>';
+        promo_string += '<tr valign="middle"><td align="left"><br>$ ' + n + '<br></td></tr>';
+        promo_string += '<tr valign="middle"><td align="left"><br>$ ' + o + '<br></td></tr>';
+        promo_string += '</table></td></tr></table></li>';
       }
       //alert (strDisplay);
     }
@@ -669,10 +670,11 @@ function findClosestBeaconIndex(beacons) {
   var nearest = -1;
   var i = 0;
   var lastRssi = -1000;
-  for (i = 0; i < beacons.count; i++) {
+  // console.log('******* [BLE] beacons count: ' + JSON.stringify(beacons) + '. length: ' + beacons.length);
+  for (i = 0; i < beacons.length; i++) {
     if (beacons[i].rssi > lastRssi) {
       lastRssi = beacons[i].rssi;
-      nearest = beacons[i].major/1000;
+      nearest = (beacons[i].major/1000 - 1);
     }
   }
   return nearest;  
@@ -682,32 +684,39 @@ function startBeaconMonitoring() {
   var delegate = new cordova.plugins.locationManager.Delegate();
 
   delegate.didDetermineStateForRegion = function (pluginResult) {
-    //console.log('[DOM] didDetermineStateForRegion: ' + JSON.stringify(pluginResult));
+    console.log('******* [BLE] didDetermineStateForRegion: ' + JSON.stringify(pluginResult));
     //cordova.plugins.locationManager.appendToDeviceLog('[DOM] didDetermineStateForRegion: ' + JSON.stringify(pluginResult));
   };
 
   delegate.didStartMonitoringForRegion = function (pluginResult) {
     //console.log('didStartMonitoringForRegion:', pluginResult);
-    console.log('didStartMonitoringForRegion:' + JSON.stringify(pluginResult));
+    console.log('******* [BLE] didStartMonitoringForRegion: ' + JSON.stringify(pluginResult));
   };
 
   delegate.didRangeBeaconsInRegion = function (pluginResult) {
     var currentTime = new Date().getTime();
-    console.log (currentTime - lastBeaconTestTime);
+    //console.log (currentTime - lastBeaconTestTime);
     if (currentTime - lastBeaconTestTime > 5000) {
       lastBeaconTestTime = currentTime;
       newBeaconIndex = -1;
-      console.log('******* [DOM] didRangeBeaconsInRegion: ******' + JSON.stringify(pluginResult.beacons));
+      // console.log('******* [BLE] didRangeBeaconsInRegion: ' + JSON.stringify(pluginResult.beacons));
       // This is where we will decide the location and call 
-      newBeaconIndex = 1;
-      newBeaconIndex = findClosestBeaconIndex(pluginResult.beacons);
+       newBeaconIndex = findClosestBeaconIndex(pluginResult.beacons);
 
       if (lastBeaconIndex != newBeaconIndex) 
       {
         lastBeaconIndex = newBeaconIndex;
-        console.log('******** FOUND NEW BEACON ******' + lastBeaconIndex);
+        console.log('******** FOUND NEW BEACON ******: Index=' + lastBeaconIndex);
+        if (newBeaconIndex > -1 && newBeaconIndex < beaconLatArray.length) {
+          updateGeoLocations(beaconLatArray[newBeaconIndex], beaconLngArray[newBeaconIndex]);
+        }
       }
-      geolocationWatchSuccess_helper(beaconLatArray[newBeaconIndex], beaconLngArray[newBeaconIndex]);
+      if (newBeaconIndex > -1 && newBeaconIndex < beaconLatArray.length) {
+        geolocationWatchSuccess_helper(beaconLatArray[newBeaconIndex], beaconLngArray[newBeaconIndex]);
+      }
+      else {
+        console.log('**** NO BEACONS **** Switch to Geo Location ****');
+      }
     }
   };
 
@@ -715,6 +724,7 @@ function startBeaconMonitoring() {
   var beaconRegion = new cordova.plugins.locationManager.BeaconRegion(identifier, uuid);
 
   cordova.plugins.locationManager.setDelegate(delegate);
+  cordova.plugins.locationManager.disableDebugLogs();
 
   // required in iOS 8+
   cordova.plugins.locationManager.requestWhenInUseAuthorization(); 
