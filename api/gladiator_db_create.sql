@@ -69,6 +69,15 @@ CREATE TABLE IF NOT EXISTS `user_points` (
   PRIMARY KEY (`user_points_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+INSERT INTO `user_points` (`user_id`, `store_id`, `points`) VALUES
+(1, '76.temp', 10),
+(2, 'Test.1', 20),
+(3, '76.temp', 10),
+(4, '76.temp', 10),
+(4, '76.temp', 20),
+(4, 'Test.1', 10),
+(3, 'Test.2', 20)
+;
 
 -- --------------------------------------------------------
 

@@ -10,10 +10,11 @@ $app->get('/users/phone/:phone_number','getUserByPhone');
 $app->get('/points/phone/:phone_number','getPointsByPhone');
 $app->get('/total_points/phone/:phone_number','getTotalPointsByPhone');
 $app->get('/sub_totals/phone/:phone_number','getSubTotalsByPhone');
+$app->post('/points', 'insertPoints');
+$app->post('/updates', 'insertUpdate');
 //$app->get('/points/phone/store/:phone_number/:store_id','getPointsByPhoneStore');
 //$app->get('/user/email/:email','getUserByEmail');
 $app->get('/updates','getUserUpdates');
-$app->post('/updates', 'insertUpdate');
 $app->delete('/updates/delete/:update_id','deleteUpdate');
 $app->get('/users/search/:query','getUserSearch');
 
@@ -100,6 +101,47 @@ function getSubTotalsByPhone($phone_number) {
 		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
 	}
 }
+
+function getPointsById($id) {
+	$sql = "SELECT B.* FROM user_points B WHERE B.user_points_id=:id";
+	try {
+		$db = getDB();
+		$stmt = $db->prepare($sql);
+		$stmt->bindParam("id", $id);
+		$stmt->execute();		
+		$user_points = $stmt->fetchAll(PDO::FETCH_OBJ);
+		$db = null;
+		echo '{"user_points": ' . json_encode($user_points) . '}';
+		
+	} catch(PDOException $e) {
+	    //error_log($e->getMessage(), 3, '/var/tmp/php.log');
+		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
+	}
+}
+
+function insertPoints() {
+	$request = \Slim\Slim::getInstance()->request();
+	$update = json_decode($request->getBody());
+	//read wait time before update
+	$sql = "INSERT INTO user_points (store_id, user_id, reward_type, points) VALUES (:store_id, :user_id, :reward_type, :points)";
+	try {
+		$db = getDB();
+		$stmt = $db->prepare($sql);  
+		$stmt->bindParam("store_id", $update->store_id);
+		$stmt->bindParam("user_id", $update->user_id);
+		$stmt->bindParam("reward_type", $update->reward_type);
+		$stmt->bindParam("points", $update->points);
+		$stmt->execute();
+		$update->id = $db->lastInsertId();
+		$db = null;
+		$update_id= $update->id;
+		getPointsById($update_id);
+	} catch(PDOException $e) {
+		//error_log($e->getMessage(), 3, '/var/tmp/php.log');
+		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
+	}
+}
+
 
 function getUserUpdates() {
 	$sql = "SELECT A.user_id, A.username, A.name, A.profile_pic, B.update_id, B.user_update, B.created FROM users A, updates B WHERE A.user_id=B.user_id_fk  ORDER BY B.update_id DESC";
