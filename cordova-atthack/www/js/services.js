@@ -5,9 +5,8 @@ var module1 = angular.module('TodoService', ['ngResource']).factory('Todo', ['$r
     return Todo;
 }]);
 
-var storeServices = angular.module('storeServices', []);
-
-storeServices.factory('Store', ['$rootScope',
+//var storeServices = angular.module('storeServices', []);
+module1.factory('Store', ['$rootScope',
   function($rootScope){
     return {
       query: function(callback) {
@@ -27,9 +26,8 @@ storeServices.factory('Store', ['$rootScope',
     };
   }]);
 
-var storeCatalogServices = angular.module('storeCatalogServices', []);
-
-storeCatalogServices.factory('StoreCatalog', ['$rootScope',
+//var storeCatalogServices = angular.module('storeCatalogServices', []);
+module1.factory('StoreCatalog', ['$rootScope',
   function ($rootScope) {
     return {
       query: function (callback) {

@@ -43,6 +43,21 @@ var lastBeaconTestTime = 0;
 var beaconLatArray = [47.86605, 47.86698, 47.84914];
 var beaconLngArray = [-122.219214, -122.218551, -122.217909];
 
+var userPhoneNumber = '4254990334';
+
+function saveUserPhone() {
+  userPhoneNumber = $('#phone').val();
+  alert('Welcome! ' + userPhoneNumber);
+}
+
+$(document).ready(function() {
+  console.log( "ready!" );
+  intialLoad();
+  $('#disconnect').click(helper.disconnect);
+  $('#loaderror').hide();
+  startApp();
+});
+
 document.addEventListener("deviceready", onDeviceReady, false);
 
 function onDeviceReady() {
@@ -112,15 +127,15 @@ function intialLoad() {
       // Now start checking location every 5 seconds...
       
       // Beacon monitoring: https://github.com/petermetz/cordova-plugin-ibeacon
-      startBeaconMonitoring();
+      //startBeaconMonitoring();
       
-      /*
+      /**/
       intervalCurrentPostion = setInterval(
         function() {
           navigator.geolocation.getCurrentPosition(geolocationWatchSuccess, geolocationWatchError, {timeout: 4000, enableHighAccuracy: true});
         }, 
         30000);
-      */
+      /**/
     });
   }
 

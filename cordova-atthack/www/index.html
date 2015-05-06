@@ -39,6 +39,61 @@
   </style>
 </head>
 <body>
+  
+  <!-- Page: home  -->
+  <div id="home" data-role="page" data-theme="a">
+    <div data-role="header" data-position="fixed">
+      <h3>Gladiator Login</h3>
+    </div>
+    <div role="main" class="ui-content">
+      <div class="ui-field-contain">
+        <label for="username">Phone</label>
+        <input type="number" id="phone" value="4046109974">
+      </div>
+      <div class="ui-field-contain">
+        <label for="password">Password</label>
+        <input type="password" id="password" value="something">
+      </div>
+      <a class="ui-btn" href="#mainPage" data-ajax="false" onClick="saveUserPhone();">Login</a>
+      <a class="ui-btn" href="#mainPage" data-ajax="false">Login with Facebook</a>
+      <a class="ui-btn" href="#mainPage" data-ajax="false">Login with Google</a>
+      <a class="ui-btn" href="#Signup">Sign up</a>
+      <a class="ui-btn" href="#promoPage2">Angular Catalog</a>
+    </div>
+    <div data-role="footer" data-position="fixed">
+      <h3>Copyright 2015</h3>
+    </div>
+  </div>
+
+  <!-- Page: Signup  -->
+  <div id="Signup" data-role="page">
+    <div data-role="header" data-position="fixed">
+      <a href="#" data-icon="back" data-rel="back">Back</a>
+      <h3>Gladiator Signup</h3>
+    </div>
+    <div role="main" class="ui-content" is="content">
+      <div class="ui-field-contain">
+        <label for="gk-418pUin">Email</label>
+        <input type="text" name id="gk-418pUin">
+      </div>
+      <div class="ui-field-contain">
+        <label for="gk-418zTGt">Phone</label>
+        <input type="text" name id="gk-418zTGt">
+      </div>
+      <div class="ui-field-contain">
+        <label for="gk-4186mWP">Password</label>
+        <input type="text" name id="gk-4186mWP">
+      </div>
+      <div class="ui-field-contain">
+        <label for="gk-4184RO5">Re-type password</label>
+        <input type="text" name id="gk-4184RO5">
+      </div>
+      <a class="ui-btn" href="#home">Signup</a>
+      <a class="ui-btn" href="#home">Link with Facebook</a>
+      <a class="ui-btn" href="#home">Link with Google</a>
+    </div>
+  </div>
+
   <div id="mainPage" data-role="page" data-theme="b">
     <div data-role="header">
       <table width="100%">
@@ -149,59 +204,6 @@
         <img width="100" alt="send sms" src="./images/atttext.jpg">    
       </a> 
     </div>            
-  </div>
-  
-  <!-- Page: home  -->
-  <div id="home" data-role="page" data-theme="a">
-    <div data-role="header" data-position="fixed">
-      <h3>Gladiator Login</h3>
-    </div>
-    <div role="main" class="ui-content">
-      <div class="ui-field-contain">
-        <label for="username">Email</label>
-        <input type="text" id="username" value="someone@gmail.com">
-      </div>
-      <div class="ui-field-contain">
-        <label for="password">Password</label>
-        <input type="password" id="password" value="something">
-      </div>
-      <a class="ui-btn" href="#mainPage" data-ajax="false">Login</a>
-      <a class="ui-btn" href="#mainPage" data-ajax="false">Login with Facebook</a>
-      <a class="ui-btn" href="#mainPage" data-ajax="false">Login with Google</a>
-      <a class="ui-btn" href="#Signup">Sign up</a>
-      <a class="ui-btn" href="#promoPage2">Angular Catalog</a>
-    </div>
-    <div data-role="footer" data-position="fixed">
-      <h3>Copyright 2015</h3>
-    </div>
-  </div>
-  <!-- Page: Signup  -->
-  <div id="Signup" data-role="page">
-    <div data-role="header" data-position="fixed">
-      <a href="#" data-icon="back" data-rel="back">Back</a>
-      <h3>Gladiator Signup</h3>
-    </div>
-    <div role="main" class="ui-content" is="content">
-      <div class="ui-field-contain">
-        <label for="gk-418pUin">Email</label>
-        <input type="text" name id="gk-418pUin">
-      </div>
-      <div class="ui-field-contain">
-        <label for="gk-418zTGt">Phone</label>
-        <input type="text" name id="gk-418zTGt">
-      </div>
-      <div class="ui-field-contain">
-        <label for="gk-4186mWP">Password</label>
-        <input type="text" name id="gk-4186mWP">
-      </div>
-      <div class="ui-field-contain">
-        <label for="gk-4184RO5">Re-type password</label>
-        <input type="text" name id="gk-4184RO5">
-      </div>
-      <a class="ui-btn" href="#home">Signup</a>
-      <a class="ui-btn" href="#home">Link with Facebook</a>
-      <a class="ui-btn" href="#home">Link with Google</a>
-    </div>
   </div>
 
   <script type="text/javascript" src="cordova.js"></script>
