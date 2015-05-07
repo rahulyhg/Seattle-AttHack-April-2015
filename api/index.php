@@ -7,6 +7,7 @@ $app = new \Slim\Slim();
 
 $app->get('/users','getUsers');
 $app->get('/users/phone/:phone_number','getUserByPhone');
+$app->get('/userid/phone/:phone_number','getUserIdByPhone');
 $app->get('/points/phone/:phone_number','getPointsByPhone');
 $app->get('/total_points/phone/:phone_number','getTotalPointsByPhone');
 $app->get('/sub_totals/phone/:phone_number','getSubTotalsByPhone');
@@ -21,7 +22,7 @@ $app->get('/users/search/:query','getUserSearch');
 $app->run();
 
 function getUsers() {
-	$sql = "SELECT email,phone,name,points,profile_pic FROM users ORDER BY user_id";
+	$sql = "SELECT * FROM users ORDER BY user_id";
 	try {
 		$db = getDB();
 		$stmt = $db->query($sql);  
@@ -36,7 +37,7 @@ function getUsers() {
 
 function getUserByPhone($phone_number) {  
 	//echo '{"phone": ' . json_encode($phone_number) . '}'; return;
-	$sql = "SELECT email,phone,name,points,profile_pic FROM users WHERE phone=:phone_number";
+	$sql = "SELECT * FROM users WHERE phone=:phone_number";
 	try {
 		$db = getDB();
 		$stmt = $db->prepare($sql);  
@@ -47,8 +48,23 @@ function getUserByPhone($phone_number) {
 		echo '{"users": ' . json_encode($users) . '}';
 	} catch(PDOException $e) {
 		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
-	}
-	
+	}	
+}
+
+function getUserIdByPhone($phone_number) {  
+	//echo '{"phone": ' . json_encode($phone_number) . '}'; return;
+	$sql = "SELECT user_id FROM users WHERE phone=:phone_number";
+	try {
+		$db = getDB();
+		$stmt = $db->prepare($sql);  
+		$stmt->bindParam("phone_number", $phone_number);
+		$stmt->execute(); 
+		$users = $stmt->fetchAll(PDO::FETCH_OBJ);
+		$db = null;
+		echo '{"users": ' . json_encode($users) . '}';
+	} catch(PDOException $e) {
+		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
+	}	
 }
 
 function getPointsByPhone($phone_number) {

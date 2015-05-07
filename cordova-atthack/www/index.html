@@ -47,18 +47,44 @@
     </div>
     <div role="main" class="ui-content">
       <div class="ui-field-contain">
-        <label for="username">Phone</label>
-        <input type="number" id="phone" value="4046109974">
+        <label for="myInput">Phone</label>
+        <input type="number" id="myInput" value="4046109974"/>
+        <table class="ui-bar-a" id="n_keypad" style="display: none; -khtml-user-select: none;">
+        <tr>
+           <td><a data-role="button" data-theme="b" class="numero">7</a></td>
+           <td><a data-role="button" data-theme="b" class="numero">8</a></td>
+           <td><a data-role="button" data-theme="b" class="numero">9</a></td>
+           <td><a data-role="button" data-theme="e" class="del">Del</a></td>
+        </tr>
+        <tr>
+           <td><a data-role="button" data-theme="b" class="numero">4</a></td>
+           <td><a data-role="button" data-theme="b" class="numero">5</a></td>
+           <td><a data-role="button" data-theme="b" class="numero">6</a></td>
+           <td><a data-role="button" data-theme="e" class="clear">Clear</a></td>
+        </tr>
+        <tr>
+           <td><a data-role="button" data-theme="b" class="numero">1</a></td>
+           <td><a data-role="button" data-theme="b" class="numero">2</a></td>
+           <td><a data-role="button" data-theme="b" class="numero">3</a></td>
+           <td><a data-role="button" data-theme="e">&nbsp;</a></td>
+        </tr>
+        <tr>
+           <td><a data-role="button" data-theme="e" class="neg">-</a></td>
+           <td><a data-role="button" data-theme="b" class="zero">0</a></td>
+           <td><a data-role="button" data-theme="e" class="pos">+</a></td>
+           <td><a data-role="button" data-theme="e" class="done">Done</a></td>
+        </tr>
+        </table>
       </div>
       <div class="ui-field-contain">
         <label for="password">Password</label>
         <input type="password" id="password" value="something">
       </div>
-      <a class="ui-btn" href="#mainPage" data-ajax="false" onClick="saveUserPhone();">Login</a>
-      <a class="ui-btn" href="#mainPage" data-ajax="false">Login with Facebook</a>
+      <a class="ui-btn" href="#mainPage" data-ajax="false" onClick="loginWithUserPhone();">Login</a>
+      <!--a class="ui-btn" href="#mainPage" data-ajax="false">Login with Facebook</a>
       <a class="ui-btn" href="#mainPage" data-ajax="false">Login with Google</a>
       <a class="ui-btn" href="#Signup">Sign up</a>
-      <a class="ui-btn" href="#promoPage2">Angular Catalog</a>
+      <a class="ui-btn" href="#promoPage2">Angular Catalog</a -->
     </div>
     <div data-role="footer" data-position="fixed">
       <h3>Copyright 2015</h3>
@@ -118,14 +144,6 @@
         <span id="notificationText"></span><br>
         Happy Shopping!
       </div>
-      <ul data-role="listview" data-inset="true">
-        <div id="stores_list">
-        </div>
-      </ul>
-    </div><!-- /content -->
-    <div id="commonFooter" style="font-size:7px; color: #777; text-align:center;">
-    SHOW AT&T MOBILE AD
-    </div>
     <div class="geo-coords" style="font-size:12px;">
       <fieldset class="ui-grid-c">
         <div class="ui-block-a">
@@ -142,6 +160,14 @@
         </div>
       </fieldset>
       <div style="font-size:12px; color:black;" id="statusMessage"></div>
+    </div>
+      <ul data-role="listview" data-inset="true">
+        <div id="stores_list">
+        </div>
+      </ul>
+    </div><!-- /content -->
+    <div id="commonFooter" style="font-size:7px; color: #777; text-align:center;">
+    SHOW AT&T MOBILE AD
     </div>
   </div><!-- main page -->
 
@@ -211,11 +237,12 @@
   <script type="text/javascript" src="js/tabletop.js"></script>
   <script type="text/javascript" src="js/controllers.js"></script>
   <script type="text/javascript" src="js/services.js"></script>
+  <script type="text/javascript" src="js/ajaxgetpost.js"></script>
   <script type="text/javascript" src="js/gladiator_att_hack.js"></script>
   <script>  
   'using strict';
   function notifyOrAlert(msg) {
-    if (cordova.plugins.backgroundMode.isActive()) {
+    if (!!window.cordova && cordova.plugins.backgroundMode.isActive()) {
       scheduleNotification(111, msg);
     } else {
       //showToast(msg);

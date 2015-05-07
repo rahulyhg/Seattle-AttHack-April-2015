@@ -30,6 +30,11 @@ var closestStoreWelcomeMessage = null;
 var closestStoreDealMessage = null;
 var closestStorePropertyRadius = 0.0;
 var closestStoreProximityRadius = 0.0;
+var closestStoreCStorePoints = 0;
+var closestStoreCStoreIdleTime = 0;
+var closestStoreFuelPoints = 0;
+var closestStoreFuelIdleTime = 0;
+
 var storeProperty={}; // id, arrivalTime, welcomeMessage, dealMessage
 var watchCounter = 0;
 var lat5queue = new Array();
@@ -44,18 +49,15 @@ var beaconLatArray = [47.86605, 47.86698, 47.84914];
 var beaconLngArray = [-122.219214, -122.218551, -122.217909];
 
 var userPhoneNumber = '4254990334';
+var loggedInUserId = 0;
 
-function saveUserPhone() {
-  userPhoneNumber = $('#phone').val();
-  alert('Welcome! ' + userPhoneNumber);
-}
+//var baseApiUrl = 'http://localhost:4567/gladiator-api/index.php';
+var baseApiUrl = 'http://52.11.106.249//gladiator-api/index.php';
 
 $(document).ready(function() {
   console.log( "ready!" );
   intialLoad();
-  $('#disconnect').click(helper.disconnect);
-  $('#loaderror').hide();
-  startApp();
+  initFancyNumberPad();
 });
 
 document.addEventListener("deviceready", onDeviceReady, false);
@@ -80,6 +82,8 @@ function onDeviceReady() {
   // BLE Scanning: https://github.com/don/cordova-plugin-ble-central
   //ble.scan([], 5, onDiscoverBleDevice, onBleError);
 
+  // 5/7/2015. Fancy pad does not work on iOS
+  //initFancyNumberPad();
 }
   
 $(document).on("pagebeforeshow","#promosPage",function() {
@@ -127,15 +131,16 @@ function intialLoad() {
       // Now start checking location every 5 seconds...
       
       // Beacon monitoring: https://github.com/petermetz/cordova-plugin-ibeacon
-      //startBeaconMonitoring();
-      
-      /**/
-      intervalCurrentPostion = setInterval(
-        function() {
-          navigator.geolocation.getCurrentPosition(geolocationWatchSuccess, geolocationWatchError, {timeout: 4000, enableHighAccuracy: true});
-        }, 
-        30000);
-      /**/
+      if (!!window.cordova) {
+        startBeaconMonitoring();
+      }
+      else {
+        intervalCurrentPostion = setInterval(
+          function() {
+            navigator.geolocation.getCurrentPosition(geolocationWatchSuccess, geolocationWatchError, {timeout: 4000, enableHighAccuracy: true});
+          }, 
+          5000);
+      }
     });
   }
 
@@ -294,6 +299,7 @@ function geolocationWatchSuccess_helper(lat, lng) {
       {
         storeProperty.welcomeMessageDisplayed = true;
         notifyOrAlert(watchCounter + ': ' + closestStoreWelcomeMessage + '.\nDistance=' + closestStoreDistance.toFixed(1));
+        postCStorePoints();
       }
       if (storeProperty.arrivalDuration > 30 && storeProperty.dealMessageDisplayed == false) {
         storeProperty.dealMessageDisplayed = true;
@@ -572,6 +578,10 @@ function gladiatorClosestStoreCatalog(callback_func) {
         t = data.getValue(i,19); // deals
         u = data.getValue(i,20); // property radius
         v = data.getValue(i,21); // proximity radius
+        aa = data.getValue(i,26); // CStorePoints
+        ab = data.getValue(i,27); // CStoreIdleTime
+        ac = data.getValue(i,28); // FuelPoints
+        ad = data.getValue(i,29); // FuelIdleTime
         strDisplay += a + ', ' + b + ', ' + g + ', ' + h + ', ' + e + '\r\n';
         x1 = parseFloat(g);
         y1 = parseFloat(h);
@@ -589,6 +599,10 @@ function gladiatorClosestStoreCatalog(callback_func) {
           closestStoreDealMessage = t;
           closestStorePropertyRadius = parseFloat(u);
           closestStoreProximityRadius = parseFloat(v);
+          closestStoreCStorePoints = parseInt(aa);
+          closestStoreCStoreIdleTime = parseInt(ab);
+          closestStoreFuelPoints = parseInt(ac);
+          closestStoreFuelIdleTime = parseInt(ad);
         }
       }
       //alert (strDisplay);
@@ -778,6 +792,68 @@ function onDiscoverBleDevice(device) {
     //deviceList.appendChild(listItem);
 }
 
+function postCStorePoints()
+{
+  if (loggedInUserId > 0 && closestStoreCStorePoints > 0) {
+    post_ajax_data(baseApiUrl + '/points', 
+    JSON.stringify({"user_id": loggedInUserId, "store_id":closestStoreId, "reward_type": 2, 
+      "points": closestStoreCStorePoints, "idle_time": closestStoreCStoreIdleTime}),
+    function (data) {
+      alert('You got ' + closestStoreCStorePoints + ' reward points.')
+    });
+  }
+}
 
+function loginWithUserPhone() {
+  userPhoneNumber = $('#myInput').val();
+  //alert('Welcome! ' + userPhoneNumber);
+  ajax_data('GET', baseApiUrl + '/users/phone/' + userPhoneNumber, function (data) {
+    loggedInUserId = data.users[0].user_id;
+    console.log(data.users);
+    alert ('Hello ' + data.users[0].name + ' your id is: ' + loggedInUserId)
+  });
+}
 
+function initFancyNumberPad() {
+  $('#myInput').click(function(){
+      $('#n_keypad').fadeToggle('fast');
+  });
+  $('.done').click(function(){
+      $('#n_keypad').hide('fast');
+  });
+  $('.numero').click(function(){
+    if (!isNaN($('#myInput').val())) {
+       if (parseInt($('#myInput').val()) == 0) {
+         $('#myInput').val($(this).text());
+       } else {
+         $('#myInput').val($('#myInput').val() + $(this).text());
+       }
+    }
+  });
+  $('.neg').click(function(){
+      if (!isNaN($('#myInput').val()) && $('#myInput').val().length > 0) {
+        if (parseInt($('#myInput').val()) > 0) {
+          $('#myInput').val(parseInt($('#myInput').val()) - 1);
+        }
+      }
+  });
+  $('.pos').click(function(){
+      if (!isNaN($('#myInput').val()) && $('#myInput').val().length > 0) {
+        $('#myInput').val(parseInt($('#myInput').val()) + 1);
+      }
+  });
+  $('.del').click(function(){
+      $('#myInput').val($('#myInput').val().substring(0,$('#myInput').val().length - 1));
+  });
+  $('.clear').click(function(){
+      $('#myInput').val('');
+  });
+  $('.zero').click(function(){
+    if (!isNaN($('#myInput').val())) {
+      if (parseInt($('#myInput').val()) != 0) {
+        $('#myInput').val($('#myInput').val() + $(this).text());
+      }
+    }
+  });
+}
 
