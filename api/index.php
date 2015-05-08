@@ -12,6 +12,7 @@ $app->get('/points/phone/:phone_number','getPointsByPhone');
 $app->get('/total_points/phone/:phone_number','getTotalPointsByPhone');
 $app->get('/sub_totals/phone/:phone_number','getSubTotalsByPhone');
 $app->post('/points', 'insertPoints');
+$app->post('/lastrewardtime', 'lastRewardTime');
 $app->post('/updates', 'insertUpdate');
 //$app->get('/points/phone/store/:phone_number/:store_id','getPointsByPhoneStore');
 //$app->get('/user/email/:email','getUserByEmail');
@@ -135,12 +136,41 @@ function getPointsById($id) {
 	}
 }
 
+function lastRewardTime() {
+	$request = \Slim\Slim::getInstance()->request();
+	$update = json_decode($request->getBody());
+	$sql = "SELECT MAX(created_time) as max_time FROM user_points WHERE store_id=:store_id";
+	$sql .= " AND user_id=:user_id AND reward_type=:reward_type";
+	try {
+		$db = getDB();
+		$stmt = $db->prepare($sql);
+		$stmt->bindParam("store_id", $update->store_id);
+		$stmt->bindParam("user_id", $update->user_id);
+		$stmt->bindParam("reward_type", $update->reward_type);
+		$stmt->execute();		
+		$user_points = $stmt->fetchAll(PDO::FETCH_OBJ);
+		$db = null;
+		echo '{"user_points": ' . json_encode($user_points) . '}';		
+	} catch(PDOException $e) {
+	    //error_log($e->getMessage(), 3, '/var/tmp/php.log');
+		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
+	}
+}
+
+function checkIdleTime($update) {
+	return true;
+}
+
 function insertPoints() {
 	$request = \Slim\Slim::getInstance()->request();
 	$update = json_decode($request->getBody());
-	//read wait time before update
+	//check idle time before insert
 	$sql = "INSERT INTO user_points (store_id, user_id, reward_type, points) VALUES (:store_id, :user_id, :reward_type, :points)";
 	try {
+		if (checkIdleTime($update) === false) {
+			echo '{"error":{"text":'. 'idle time not expired.' .'}}';
+			return; 		
+		}
 		$db = getDB();
 		$stmt = $db->prepare($sql);  
 		$stmt->bindParam("store_id", $update->store_id);
@@ -157,7 +187,6 @@ function insertPoints() {
 		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
 	}
 }
-
 
 function getUserUpdates() {
 	$sql = "SELECT A.user_id, A.username, A.name, A.profile_pic, B.update_id, B.user_update, B.created FROM users A, updates B WHERE A.user_id=B.user_id_fk  ORDER BY B.update_id DESC";

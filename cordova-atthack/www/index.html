@@ -81,6 +81,7 @@
         <input type="password" id="password" value="something">
       </div>
       <a class="ui-btn" href="#mainPage" data-ajax="false" onClick="loginWithUserPhone();">Login</a>
+      <a class="ui-btn" href="" data-ajax="false" onClick="PostPoints();">Post Points 2</a>
       <!--a class="ui-btn" href="#mainPage" data-ajax="false">Login with Facebook</a>
       <a class="ui-btn" href="#mainPage" data-ajax="false">Login with Google</a>
       <a class="ui-btn" href="#Signup">Sign up</a>
@@ -124,8 +125,8 @@
     <div data-role="header">
       <table width="100%">
         <tr valign="middle">
-          <td width="30%"><font size="2">Hello Kathy!</font><BR/>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#promosPage"><img height="40" src="./images/user_logo_200.png" alt="user logo" /></a></td>
-          <td width="40%" align="center">Shots: 350</td>
+          <td width="30%"><font size="2">Hello <span id="username1">Kathy</span>!</font><BR/>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#promosPage"><img id="userimage1" height="40" src="./images/user_logo_200.png" alt="user logo" /></a></td>
+          <td width="40%" align="center">Points: <span id="totalpoints1">350</span></td>
           <td width="30%" align="right"><img height="60" src="./images/LP-logo.png"></img></td>
         </tr>
       </table>
@@ -252,5 +253,17 @@
     console.log("NOTIFY:" + msg);
   }
   </script>
+      <script>
+      function PostPoints() {
+        //S2mHttpClient.postForm(baseApiUrl + '/points',
+        post_ajax_data(baseApiUrl + '/points', 
+          JSON.stringify({"user_id": 3, "store_id": "76.temp", "reward_type": 2, 
+            "points": 10, "idle_time": 60}),
+          function (data) {
+            alert('You got ' + closestStoreCStorePoints + ' reward points.')
+          }
+        );        
+      }
+      </script>
 </body>
 </html>

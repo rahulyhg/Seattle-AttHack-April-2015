@@ -52,11 +52,11 @@ var userPhoneNumber = '4254990334';
 var loggedInUserId = 0;
 
 //var baseApiUrl = 'http://localhost:4567/gladiator-api/index.php';
-var baseApiUrl = 'http://52.11.106.249//gladiator-api/index.php';
+var baseApiUrl = 'http://52.11.106.249/gladiator-api/index.php';
 
 $(document).ready(function() {
   console.log( "ready!" );
-  intialLoad();
+  //intialLoad();
   initFancyNumberPad();
 });
 
@@ -65,7 +65,7 @@ document.addEventListener("deviceready", onDeviceReady, false);
 function onDeviceReady() {
   registerNotificationPermission();
   cordova.plugins.backgroundMode.enable();
-  intialLoad();
+  //intialLoad();
   // Refer to https://github.com/christocracy/cordova-plugin-background-geolocation
 
   <!-- notification callbacks -->
@@ -799,7 +799,11 @@ function postCStorePoints()
     JSON.stringify({"user_id": loggedInUserId, "store_id":closestStoreId, "reward_type": 2, 
       "points": closestStoreCStorePoints, "idle_time": closestStoreCStoreIdleTime}),
     function (data) {
-      alert('You got ' + closestStoreCStorePoints + ' reward points.')
+      ajax_data('GET', baseApiUrl + '/total_points/phone/' + userPhoneNumber, function (data) {
+        console.log(data.total_points);
+        //alert ('Hello ' + data.users[0].name + ' your id is: ' + loggedInUserId);
+        $('#totalpoints1').text(data.total_points[0].total);
+      });
     });
   }
 }
@@ -810,7 +814,15 @@ function loginWithUserPhone() {
   ajax_data('GET', baseApiUrl + '/users/phone/' + userPhoneNumber, function (data) {
     loggedInUserId = data.users[0].user_id;
     console.log(data.users);
-    alert ('Hello ' + data.users[0].name + ' your id is: ' + loggedInUserId)
+    //alert ('Hello ' + data.users[0].name + ' your id is: ' + loggedInUserId);
+    $('#username1').text(data.users[0].name.split(' ')[0]);
+    $('#userimage1').attr('src', data.users[0].profile_pic);
+    ajax_data('GET', baseApiUrl + '/total_points/phone/' + userPhoneNumber, function (data) {
+      console.log(data.total_points);
+      //alert ('Hello ' + data.users[0].name + ' your id is: ' + loggedInUserId);
+      $('#totalpoints1').text(data.total_points[0].total);
+      intialLoad();
+    });
   });
 }
 
